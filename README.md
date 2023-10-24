@@ -1,2 +1,2 @@
 ## Mi calculadora
-Esta es mi calculadora
+Esta es la calculadora de Rubén Elices
