@@ -1,0 +1,12 @@
+num = int(input("dime un numero del 15 al 100 "))
+while (num < 15) or (num > 100):
+    print("ese numero no es valido")
+    num = int(input("dime un numero del 15 al 100"))
+
+i = 1
+print("Los múltiplos de 7 son: ")
+while i <= num:
+    if i%7 == 0:
+        print("- {}".format(i))
+        i = i+6
+    i = i+1

@@ -1,0 +1,183 @@
+class Tablero:
+    def __init__(self):
+        self.tablero = [
+            ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
+            ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+            ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
+            ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖']
+        ]
+
+    def imprimir_tablero(self):
+        for fila in self.tablero:
+            print(" ".join(fila))
+        print()
+
+
+class Pieza:
+    def __init__(self, color):
+        self.color = color
+
+    def mover(self, origen, destino, tablero):
+        pass
+
+
+class Peon(Pieza):
+    def mover(self, origen, destino, tablero):
+        fila_origen, columna_origen = origen
+        fila_destino, columna_destino = destino
+
+        if self.color == 'blanco':
+            direccion = -1
+        else:
+            direccion = 1
+
+        # Movimiento inicial de dos casillas
+        if (fila_origen == 6 and self.color == 'blanco') or (fila_origen == 1 and self.color == 'negro'):
+            if fila_destino == fila_origen + 2 * direccion and columna_destino == columna_origen and tablero[fila_destino][columna_destino] == ' ':
+                tablero[fila_destino][columna_destino] = tablero[fila_origen][columna_origen]
+                tablero[fila_origen][columna_origen] = ' '
+                return True
+
+        # Movimiento normal de una casilla
+        if fila_destino == fila_origen + 1 * direccion and columna_destino == columna_origen and tablero[fila_destino][columna_destino] == ' ':
+            tablero[fila_destino][columna_destino] = tablero[fila_origen][columna_origen]
+            tablero[fila_origen][columna_origen] = ' '
+            return True
+
+        return False
+
+
+class Torre(Pieza):
+    def mover(self, origen, destino, tablero):
+        fila_origen, columna_origen = origen
+        fila_destino, columna_destino = destino
+
+        if fila_origen == fila_destino or columna_origen == columna_destino:
+            # Movimiento válido para una torre
+            tablero[fila_destino][columna_destino] = tablero[fila_origen][columna_origen]
+            tablero[fila_origen][columna_origen] = ' '
+            return True
+
+        return False
+
+
+class Caballo(Pieza):
+    def mover(self, origen, destino, tablero):
+        fila_origen, columna_origen = origen
+        fila_destino, columna_destino = destino
+
+        movimientos_posibles = [
+            (fila_origen + 2, columna_origen + 1),
+            (fila_origen + 2, columna_origen - 1),
+            (fila_origen - 2, columna_origen + 1),
+            (fila_origen - 2, columna_origen - 1),
+            (fila_origen + 1, columna_origen + 2),
+            (fila_origen + 1, columna_origen - 2),
+            (fila_origen - 1, columna_origen + 2),
+            (fila_origen - 1, columna_origen - 2),
+        ]
+
+        if (fila_destino, columna_destino) in movimientos_posibles:
+            tablero[fila_destino][columna_destino] = tablero[fila_origen][columna_origen]
+            tablero[fila_origen][columna_origen] = ' '
+            return True
+
+        return False
+
+
+class Alfil(Pieza):
+    def mover(self, origen, destino, tablero):
+        fila_origen, columna_origen = origen
+        fila_destino, columna_destino = destino
+
+        if abs(fila_destino - fila_origen) == abs(columna_destino - columna_origen):
+            # Movimiento válido para un alfil
+            tablero[fila_destino][columna_destino] = tablero[fila_origen][columna_origen]
+            tablero[fila_origen][columna_origen] = ' '
+            return True
+
+        return False
+
+
+class Reina(Pieza):
+    def mover(self, origen, destino, tablero):
+        torre = Torre(self.color)
+        alfil = Alfil(self.color)
+
+        return torre.mover(origen, destino, tablero) or alfil.mover(origen, destino, tablero)
+
+
+class Rey(Pieza):
+    def mover(self, origen, destino, tablero):
+        fila_origen, columna_origen = origen
+        fila_destino, columna_destino = destino
+
+        movimientos_posibles = [
+            (fila_origen + 1, columna_origen),
+            (fila_origen - 1, columna_origen),
+            (fila_origen, columna_origen + 1),
+            (fila_origen, columna_origen - 1),
+            (fila_origen + 1, columna_origen + 1),
+            (fila_origen - 1, columna_origen - 1),
+            (fila_origen + 1, columna_origen - 1),
+            (fila_origen - 1, columna_origen + 1),
+        ]
+
+        if (fila_destino, columna_destino) in movimientos_posibles:
+            tablero[fila_destino][columna_destino] = tablero[fila_origen][columna_origen]
+            tablero[fila_origen][columna_origen] = ' '
+            return True
+
+        return False
+
+
+class Jugador:
+    def __init__(self, color):
+        self.color = color
+
+
+class Juego:
+    def __init__(self):
+        self.tablero = Tablero()
+        self.jugador_blanco = Jugador('blanco')
+        self.jugador_negro = Jugador('negro')
+
+    def jugar(self):
+        turno = 1
+        while True:
+            print(f"Turno {turno}")
+            self.tablero.imprimir_tablero()
+
+            jugador_actual = self.jugador_blanco if turno % 2 == 1 else self.jugador_negro
+            pieza = self.elegir_pieza(jugador_actual)
+
+            if pieza:
+                movimiento_valido = False
+                while not movimiento_valido:
+                    origen = self.obtener_coordenadas("Elija la posición de la pieza que desea mover:")
+                    destino = self.obtener_coordenadas("Elija la posición a la que desea mover la pieza:")
+                    movimiento_valido = self.validar_movimiento(pieza, origen, destino)
+
+                pieza.mover(origen, destino, self.tablero.tablero)
+                turno += 1
+
+    def elegir_pieza(self, jugador):
+        # Implementa la lógica para que el jugador elija una pieza
+        return Peon(color=jugador.color)
+
+    def obtener_coordenadas(self, mensaje):
+        fila = int(input(f"{mensaje} Fila: ")) - 1
+        columna = int(input(f"{mensaje} Columna: ")) - 1
+        return fila, columna
+
+    def validar_movimiento(self, pieza, origen, destino):
+        return pieza.mover(origen, destino, self.tablero.tablero)
+
+
+# Ejemplo de uso
+juego = Juego()
+juego.jugar()
